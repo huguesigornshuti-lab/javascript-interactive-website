@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive JavaScript Website (Learning Aim C)</title>
+  <style>
+    /* ====== Basic layout & typography ====== */
+    :root{--primary:#007bff;--dark:#222;--light:#f4f4f4;--card:#ffffff}
+    *{box-sizing:border-box}
+    body{font-family:Inter, Arial, Helvetica, sans-serif;margin:0;padding:0;background:var(--light);color:#111;transition:background .25s,color .25s}
+    header{background:linear-gradient(90deg,var(--primary),#0056b3);color:#fff;padding:22px 16px;text-align:center}
+    header h1{margin:0;font-size:1.6rem}
+
+    /* container (class) and sections */
+    .container{max-width:900px;margin:20px auto;padding:18px}
+    .card{background:var(--card);padding:16px;border-radius:8px;margin-bottom:18px;box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+
+    /* ====== Form & inputs (IDs and classes used) ====== */
+    form {display:block;}
+    .form-row{margin-bottom:10px}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input[type="text"], input[type="email"], input[type="password"]{width:100%;padding:10px;border:1px solid #cfcfcf;border-radius:6px}
+    input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,123,255,0.08)}
+
+    /* ====== Buttons (class .btn and hover effect) ====== */
+    .btn{display:inline-block;padding:10px 14px;background:var(--primary);color:#fff;border:none;border-radius:6px;cursor:pointer;text-decoration:none}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,0.08)}
+    .btn.secondary{background:#666}
+
+    /* ====== Image box (id used) ====== */
+    #imageBox{width:100%;max-width:300px;height:180px;background-size:cover;background-position:center;border-radius:8px;margin-top:10px;transition:filter .4s,transform .4s}
+
+    /* ====== Theme (dark-mode via class on body) ====== */
+    .dark-mode{background:#111;color:#eee}
+    .dark-mode header{background:#111}
+    .dark-mode .card{background:#1b1b1b}
+    .dark-mode input{background:#111;color:#eee;border-color:#333}
+
+    /* ====== Small utilities ====== */
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .col{flex:1}
+    .center{display:flex;align-items:center;gap:8px}
+    .muted{color:#666;font-size:0.95rem}
+
+    /* ====== Slideshow styles ====== */
+    .slideshow{position:relative;width:100%;max-width:520px;height:280px;overflow:hidden;border-radius:8px}
+    .slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .6s}
+    .slide.active{opacity:1}
+
+    /* responsive */
+    @media (max-width:640px){header h1{font-size:1.2rem}.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Interactive JavaScript Website — Learning Aim C</h1>
+  </header>
+
+  <main class="container">
+
+    <!-- 1) Form Card (requirement: at least one form/input) -->
+    <section class="card" id="formSection">
+      <h2>1. Contact Form (with validation)</h2>
+      <p class="muted">Enter your details. JavaScript checks for empty fields and valid email format.</p>
+
+      <form id="contactForm" onsubmit="return false;">
+        <div class="form-row">
+          <label for="name">Name</label>
+          <input id="name" type="text" placeholder="Your name">
+        </div>
+
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com">
+        </div>
+
+        <div class="form-row">
+          <label for="password">Password (min 6 chars)</label>
+          <input id="password" type="password" placeholder="Enter password">
+        </div>
+
+        <div class="row">
+          <button class="btn" id="submitBtn" onclick="handleSubmit()">Submit</button>
+          <button class="btn secondary" onclick="clearForm()" type="button">Clear</button>
+        </div>
+
+        <p id="formMsg" class="muted" style="margin-top:10px"></p>
+      </form>
+    </section>
+
+    <!-- 2) Theme & Greeting Card -->
+    <section class="card" id="themeSection">
+      <h2>2. Theme Switcher & Real-time Greeting</h2>
+      <p class="muted">Try the theme switcher and see a real-time greeting based on your local time.</p>
+
+      <div class="row center">
+        <button class="btn" id="themeBtn" onclick="toggleTheme()">Toggle Dark / Light</button>
+        <button class="btn" onclick="toggleSection('formSection')">Show/Hide Form</button>
+      </div>
+
+      <p style="margin-top:12px"><strong id="greeting">Good day!</strong> <span class="muted">(updates on load)</span></p>
+    </section>
+
+    <!-- 3) Image / Slideshow Card -->
+    <section class="card" id="imageSection">
+      <h2>3. Image Changer & Automatic Slideshow</h2>
+      <p class="muted">Click to change the image. A small slideshow runs automatically.</p>
+
+      <div class="row">
+        <div style="flex:1">
+          <div id="imageBox" style="background-image:url('https://via.placeholder.com/520x280/007bff/ffffff?text=Image+1')"></div>
+          <div style="margin-top:10px">
+            <button class="btn" onclick="changeImage()">Change Image</button>
+            <button class="btn secondary" onclick="resetImage()">Reset Image</button>
+          </div>
+        </div>
+
+        <div style="flex:1">
+          <div class="slideshow" id="slideshow">
+            <div class="slide active" style="background-image:url('https://via.placeholder.com/520x280/ff7f50/ffffff?text=Slide+1')"></div>
+            <div class="slide" style="background-image:url('https://via.placeholder.com/520x280/6a5acd/ffffff?text=Slide+2')"></div>
+            <div class="slide" style="background-image:url('https://via.placeholder.com/520x280/2e8b57/ffffff?text=Slide+3')"></div>
+          </div>
+          <p class="muted" style="margin-top:8px">Slideshow changes every 3 seconds.</p>
+        </div>
+      </div>
+    </section>
+ </main>
+
+  <script>
+    /* ====== Helpers & Requirements mapping ======
+       - Header present in HTML
+       - Main contains interactive features (form, theme, image, slideshow)
+       - Uses classes (.container, .card, .btn) and IDs (#imageBox, #themeBtn, #contactForm)
+       - CSS includes margins/padding and hover effects
+       - JavaScript features: form validation, theme switcher, image changer, greeting, show/hide, slideshow
+    */
+
+    // Real-time greeting
+    function updateGreeting(){
+      const g = document.getElementById('greeting');
+      const hour = new Date().getHours();
+      if(hour<12) g.textContent = 'Good morning!';
+      else if(hour<18) g.textContent = 'Good afternoon!';
+      else g.textContent = 'Good evening!';
+    }
+    updateGreeting();
+
+    // Form validation (checks empty, email, password length)
+    function handleSubmit(){
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const msg = document.getElementById('formMsg');
+
+      if(!name || !email || !password){
+        alert('Please fill in all fields.');
+        msg.textContent = 'Error: Some fields are empty.';
+        return false;
+      }
+      // simple email check
+      if(!/^\\S+@\\S+\\.\\S+$/.test(email)){
+        alert('Please provide a valid email address.');
+        msg.textContent = 'Error: Invalid email format.';
+        return false;
+      }
+      if(password.length < 6){
+        alert('Password must be at least 6 characters.');
+        msg.textContent = 'Error: Password too short.';
+        return false;
+      }
+
+      // success
+      msg.textContent = 'Form submitted successfully! (demo)';
+      alert('Form submitted successfully!');
+      return true;
+    }
+
+    function clearForm(){
+      document.getElementById('contactForm').reset();
+      document.getElementById('formMsg').textContent = '';
+    }
+
+    // Theme switcher (toggle class on body)
+    function toggleTheme(){
+      document.body.classList.toggle('dark-mode');
+    }
+
+    // Show/Hide a section by id
+    function toggleSection(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.style.display = (el.style.display === 'none') ? '' : 'none';
+    }
+
+    // Image changer functions
+    const defaultImage = "data:image/jpeg;base64,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";
+    const altImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa_HJd6Er2kroQNWfRuX6qab5gO1SnYcq93w&s";
+    function changeImage(){
+      const box = document.getElementById('imageBox');
+      const current = box.style.backgroundImage || '';
+      box.style.transform = 'scale(0.98)';
+      setTimeout(()=>box.style.transform='scale(1)',220);
+      if(current.indexOf('ff5500')>-1) box.style.backgroundImage = `url('${defaultImage}')`;
+      else box.style.backgroundImage = `url('${altImage}')`;
+    }
+    function resetImage(){
+      document.getElementById('imageBox').style.backgroundImage = `url('${defaultImage}')`;
+    }
+
+    // Automatic slideshow (cycles slides every 3s)
+    (function startSlideshow(){
+      const slides = Array.from(document.querySelectorAll('#slideshow .slide'));
+      let idx = 0;
+      setInterval(()=>{
+        slides[idx].classList.remove('active');
+        idx = (idx+1) % slides.length;
+        slides[idx].classList.add('active');
+      },3000);
+    })();
+
+    // Accessibility: allow Enter key to submit form
+    document.getElementById('contactForm').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        handleSubmit();
+      }
+    });
+  </script>
+</body>
+</html>
