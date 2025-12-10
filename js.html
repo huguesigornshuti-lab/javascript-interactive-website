@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive JavaScript Website (Learning Aim C)</title>
+  <style>
+    /* ====== Basic layout & typography ====== */
+    :root{--primary:#007bff;--dark:#222;--light:#f4f4f4;--card:#ffffff}
+    *{box-sizing:border-box}
+    body{font-family:Inter, Arial, Helvetica, sans-serif;margin:0;padding:0;background:var(--light);color:#111;transition:background .25s,color .25s}
+    header{background:linear-gradient(90deg,var(--primary),#0056b3);color:#fff;padding:22px 16px;text-align:center}
+    header h1{margin:0;font-size:1.6rem}
+
+    /* container (class) and sections */
+    .container{max-width:900px;margin:20px auto;padding:18px}
+    .card{background:var(--card);padding:16px;border-radius:8px;margin-bottom:18px;box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+
+    /* ====== Form & inputs (IDs and classes used) ====== */
+    form {display:block;}
+    .form-row{margin-bottom:10px}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input[type="text"], input[type="email"], input[type="password"]{width:100%;padding:10px;border:1px solid #cfcfcf;border-radius:6px}
+    input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,123,255,0.08)}
+
+    /* ====== Buttons (class .btn and hover effect) ====== */
+    .btn{display:inline-block;padding:10px 14px;background:var(--primary);color:#fff;border:none;border-radius:6px;cursor:pointer;text-decoration:none}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,0.08)}
+    .btn.secondary{background:#666}
+
+    /* ====== Image box (id used) ====== */
+    #imageBox{width:100%;max-width:300px;height:180px;background-size:cover;background-position:center;border-radius:8px;margin-top:10px;transition:filter .4s,transform .4s}
+
+    /* ====== Theme (dark-mode via class on body) ====== */
+    .dark-mode{background:#111;color:#eee}
+    .dark-mode header{background:#111}
+    .dark-mode .card{background:#1b1b1b}
+    .dark-mode input{background:#111;color:#eee;border-color:#333}
+
+    /* ====== Small utilities ====== */
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .col{flex:1}
+    .center{display:flex;align-items:center;gap:8px}
+    .muted{color:#666;font-size:0.95rem}
+
+    /* ====== Slideshow styles ====== */
+    .slideshow{position:relative;width:100%;max-width:520px;height:280px;overflow:hidden;border-radius:8px}
+    .slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .6s}
+    .slide.active{opacity:1}
+
+    /* responsive */
+    @media (max-width:640px){header h1{font-size:1.2rem}.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Interactive JavaScript Website — Learning Aim C</h1>
+  </header>
+
+  <main class="container">
+
+    <!-- 1) Form Card (requirement: at least one form/input) -->
+    <section class="card" id="formSection">
+      <h2>1. Contact Form (with validation)</h2>
+      <p class="muted">Enter your details. JavaScript checks for empty fields and valid email format.</p>
+
+      <form id="contactForm" onsubmit="return false;">
+        <div class="form-row">
+          <label for="name">Name</label>
+          <input id="name" type="text" placeholder="Your name">
+        </div>
+
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com">
+        </div>
+
+        <div class="form-row">
+          <label for="password">Password (min 6 chars)</label>
+          <input id="password" type="password" placeholder="Enter password">
+        </div>
+
+        <div class="row">
+          <button class="btn" id="submitBtn" onclick="handleSubmit()">Submit</button>
+          <button class="btn secondary" onclick="clearForm()" type="button">Clear</button>
+        </div>
+
+        <p id="formMsg" class="muted" style="margin-top:10px"></p>
+      </form>
+    </section>
+
+    <!-- 2) Theme & Greeting Card -->
+    <section class="card" id="themeSection">
+      <h2>2. Theme Switcher & Real-time Greeting</h2>
+      <p class="muted">Try the theme switcher and see a real-time greeting based on your local time.</p>
+
+      <div class="row center">
+        <button class="btn" id="themeBtn" onclick="toggleTheme()">Toggle Dark / Light</button>
+        <button class="btn" onclick="toggleSection('formSection')">Show/Hide Form</button>
+      </div>
+
+      <p style="margin-top:12px"><strong id="greeting">Good day!</strong> <span class="muted">(updates on load)</span></p>
+    </section>
+
+    <!-- 3) Image / Slideshow Card -->
+    <section class="card" id="imageSection">
+      <h2>3. Image Changer & Automatic Slideshow</h2>
+      <p class="muted">Click to change the image. A small slideshow runs automatically.</p>
+
+      <div class="row">
+        <div style="flex:1">
+          <div id="imageBox" style="background-image:url('https://via.placeholder.com/520x280/007bff/ffffff?text=Image+1')"></div>
+          <div style="margin-top:10px">
+            <button class="btn" onclick="changeImage()">Change Image</button>
+            <button class="btn secondary" onclick="resetImage()">Reset Image</button>
+          </div>
+        </div>
+
+        <div style="flex:1">
+          <div class="slideshow" id="slideshow">
+            <div class="slide active" style="background-image:url('https://via.placeholder.com/520x280/ff7f50/ffffff?text=Slide+1')"></div>
+            <div class="slide" style="background-image:url('https://via.placeholder.com/520x280/6a5acd/ffffff?text=Slide+2')"></div>
+            <div class="slide" style="background-image:url('https://via.placeholder.com/520x280/2e8b57/ffffff?text=Slide+3')"></div>
+          </div>
+          <p class="muted" style="margin-top:8px">Slideshow changes every 3 seconds.</p>
+        </div>
+      </div>
+    </section>
+</main>
+
+  <script>
+    /* ====== Helpers & Requirements mapping ======
+       - Header present in HTML
+       - Main contains interactive features (form, theme, image, slideshow)
+       - Uses classes (.container, .card, .btn) and IDs (#imageBox, #themeBtn, #contactForm)
+       - CSS includes margins/padding and hover effects
+       - JavaScript features: form validation, theme switcher, image changer, greeting, show/hide, slideshow
+    */
+
+    // Real-time greeting
+    function updateGreeting(){
+      const g = document.getElementById('greeting');
+      const hour = new Date().getHours();
+      if(hour<12) g.textContent = 'Good morning!';
+      else if(hour<18) g.textContent = 'Good afternoon!';
+      else g.textContent = 'Good evening!';
+    }
+    updateGreeting();
+
+    // Form validation (checks empty, email, password length)
+    function handleSubmit(){
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const msg = document.getElementById('formMsg');
+
+      if(!name || !email || !password){
+        alert('Please fill in all fields.');
+        msg.textContent = 'Error: Some fields are empty.';
+        return false;
+      }
+      // simple email check
+      if(!/^\S+@\S+\.\S+$/.test(email)){
+        alert('Please provide a valid email address.');
+        msg.textContent = 'Error: Invalid email format.';
+        return false;
+      }
+      if(password.length < 6){
+        alert('Password must be at least 6 characters.');
+        msg.textContent = 'Error: Password too short.';
+        return false;
+      }
+
+      // success
+      msg.textContent = 'Form submitted successfully! (demo)';
+      alert('Form submitted successfully!');
+      return true;
+    }
+
+    function clearForm(){
+      document.getElementById('contactForm').reset();
+      document.getElementById('formMsg').textContent = '';
+    }
+
+    // Theme switcher (toggle class on body)
+    function toggleTheme(){
+      document.body.classList.toggle('dark-mode');
+    }
+
+    // Show/Hide a section by id
+    function toggleSection(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.style.display = (el.style.display === 'none') ? '' : 'none';
+    }
+
+    // Image changer functions
+    const defaultImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa_HJd6Er2kroQNWfRuX6qab5gO1SnYcq93w&s";
+    const altImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC1dSwtPCeWeoag-ZLaFPe2fxh31Km7LbDdw&s";
+    function changeImage(){
+      const box = document.getElementById('imageBox');
+      const current = box.style.backgroundImage || '';
+      box.style.transform = 'scale(0.98)';
+      setTimeout(()=>box.style.transform='scale(1)',220);
+      if(current.indexOf('ff5500')>-1) box.style.backgroundImage = `url('${defaultImage}')`;
+      else box.style.backgroundImage = `url('${altImage}')`;
+    }
+    function resetImage(){
+      document.getElementById('imageBox').style.backgroundImage = `url('${defaultImage}')`;
+    }
+
+    // Automatic slideshow (cycles slides every 3s)
+    (function startSlideshow(){
+      const slides = Array.from(document.querySelectorAll('#slideshow .slide'));
+      let idx = 0;
+      setInterval(()=>{
+        slides[idx].classList.remove('active');
+        idx = (idx+1) % slides.length;
+        slides[idx].classList.add('active');
+      },3000);
+    })();
+
+    // Accessibility: allow Enter key to submit form
+    document.getElementById('contactForm').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        handleSubmit();
+      }
+    });
+  </script>
+</body>
+</html>
